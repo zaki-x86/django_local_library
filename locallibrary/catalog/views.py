@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Book, BookInstance, Author
+from django.views import generic
 
 # Create your views here.
 def index(request):
@@ -24,3 +26,29 @@ def index(request):
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
+
+class BookListView(generic.ListView):
+    model = Book
+    
+    def get_queryset(self):
+        return Book.objects.filter(title__icontains='war')[:5] # Get 5 books containing the title war
+    
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get the context
+        context = super(BookListView, self).get_context_data(**kwargs)
+        # Create any data and add it to the context
+        context['book_list'] = Book.objects.all()
+        return context
+    
+    template_name="book_list.html"
+    
+class BookDetailView(generic.DetailView):
+    model = Book
+
+def book_detail_view(request, pk):
+    try:
+        book = Book.objects.get(pk=pk)
+    except Book.DoesNotExist:
+        raise Http404('Book does not exist')
+
+    return render(request, 'book_detail.html', context={'book': book})
