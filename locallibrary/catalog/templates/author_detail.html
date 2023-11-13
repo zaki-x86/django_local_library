@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1> {{author.first_name}} {{author.last_name}} </h1>
+
+    <p>Date of Birth: {{author.date_of_birth}}</p>
+    {% if author.date_of_death is not None %}
+    <p>Date of Death: {{author.date_of_death}}</p>
+    {% endif %}
+
+    <h2>Publications</h2>
+    {% if author.book_set.all.count != 0 %}
+        <ul>
+            {% for book in author.book_set.all %}
+                <li>{{book.title}}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p> No publications yet</p>
+    {% endif %}
+{% endblock content %}

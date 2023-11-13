@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from .models import Book, BookInstance, Author
 from django.views import generic
 
@@ -41,6 +41,7 @@ class BookListView(generic.ListView):
         return context
     
     template_name="book_list.html"
+    paginate_by = 2
     
 class BookDetailView(generic.DetailView):
     model = Book
@@ -52,3 +53,21 @@ def book_detail_view(request, pk):
         raise Http404('Book does not exist')
 
     return render(request, 'book_detail.html', context={'book': book})
+
+class AuthorListView(generic.ListView):
+    model = Author
+    template_name = "author_list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["author_list"] = Author.objects.all()
+        return context
+    
+    
+def author_detail_view(request, id):
+    try:
+        author = Author.objects.get(pk=id)
+    except Author.DoesNotExist:
+        raise Http404("Author does not exist")
+    
+    return render(request, 'author_detail.html', context={'author': author})
