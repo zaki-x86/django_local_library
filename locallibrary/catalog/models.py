@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
 import uuid # Required for unique book instances
 
-# Create your models here.
 class Genre(models.Model):
     """Model representing a book genre."""
     name = models.CharField(
@@ -19,9 +18,9 @@ class Genre(models.Model):
         """Returns the url to access a particular genre instance."""
         return reverse('genre-detail', args=[str(self.id)])
 
-
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
+    
     title = models.CharField(max_length=200)
     author = models.ForeignKey('Author', on_delete=models.RESTRICT, null=True)
     # Foreign Key used because book can only have one author, but authors can have multiple books.
@@ -53,8 +52,8 @@ class Book(models.Model):
     display_genre.short_description = "Genre"
 
 class BookInstance(models.Model):
-
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text="Unique ID for this particular book across whole library")
     book = models.ForeignKey('Book', on_delete=models.RESTRICT, null=True)
@@ -83,9 +82,9 @@ class BookInstance(models.Model):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
 
-
 class Author(models.Model):
     """Model representing an author."""
+    
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)
@@ -104,6 +103,7 @@ class Author(models.Model):
 
 class Language(models.Model):
     """Model representing language"""
+    
     name = models.CharField(max_length=100)
     
     def __str__(self):

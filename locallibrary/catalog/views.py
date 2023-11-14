@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from .models import Book, BookInstance, Author
 from django.views import generic
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def index(request):
@@ -30,8 +31,9 @@ def index(request):
 class BookListView(generic.ListView):
     model = Book
     
-    def get_queryset(self):
-        return Book.objects.filter(title__icontains='war')[:5] # Get 5 books containing the title war
+    # Example. Get 5 books containing the title war
+    #def get_queryset(self):
+    #    return Book.objects.filter(title__icontains='war')[:5] 
     
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get the context
@@ -63,7 +65,6 @@ class AuthorListView(generic.ListView):
         context["author_list"] = Author.objects.all()
         return context
     
-    
 def author_detail_view(request, id):
     try:
         author = Author.objects.get(pk=id)
@@ -71,3 +72,7 @@ def author_detail_view(request, id):
         raise Http404("Author does not exist")
     
     return render(request, 'author_detail.html', context={'author': author})
+
+@login_required
+def user_profile(request):
+    return render(request, 'user_profile.html', {})
