@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
+from django.contrib.auth.models import User
 from .models import Book, BookInstance, Author
 from django.views import generic
 from django.contrib.auth.decorators import login_required
@@ -74,5 +75,10 @@ def author_detail_view(request, id):
     return render(request, 'author_detail.html', context={'author': author})
 
 @login_required
-def user_profile(request):
-    return render(request, 'user_profile.html', {})
+def user_profile(request, username):
+    user = User.objects.get(username=username)
+    if not user:
+        print("No user")
+    else:
+        print(f'Found user: {user.username}')
+    return render(request, 'user_profile.html', {"user":user})
