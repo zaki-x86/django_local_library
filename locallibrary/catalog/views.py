@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Book, BookInstance, Author
 from django.views import generic
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 def index(request):
@@ -82,3 +83,16 @@ def user_profile(request, username):
     else:
         print(f'Found user: {user.username}')
     return render(request, 'user_profile.html', {"user":user})
+
+class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    model = BookInstance
+    template_name = 'bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            BookInstance.objects.filter(borrower=self.request.user)
+            .filter(status__exact='o')
+            .order_by('due_back')
+        )
